@@ -32,7 +32,7 @@ class Layout
         </nav>
     </header>
     <main class="container">
-        ' . (is_string($content) ? $content : $content->render()) . '
+        ' . (is_string($content) ? $content : (method_exists($content, "render") ? $content->render() : (string)$content)) . '
     </main>
     <footer class="container">
         <hr>
