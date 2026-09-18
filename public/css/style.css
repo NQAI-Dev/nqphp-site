@@ -1,172 +1,209 @@
-/* nqphp default styles */
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --bg-base: #f8fafc;
-    --bg-surface: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-    --radius: 12px;
+    --bg: #ffffff;
+    --fg: #111827;
+    --fg-muted: #6b7280;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --border: #e5e7eb;
+    --radius: 8px;
 }
-
-[data-theme="dark"] {
-    --primary: #6366f1;
-    --primary-hover: #818cf8;
-    --bg-base: #0f172a;
-    --bg-surface: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: #334155;
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #111827;
+        --fg: #f9fafb;
+        --fg-muted: #9ca3af;
+        --primary: #3b82f6;
+        --primary-hover: #60a5fa;
+        --border: #374151;
+    }
 }
-
-body {
-    background-color: var(--bg-base);
-    color: var(--text-main);
-    font-family: system-ui, -apple-system, sans-serif;
-    padding-top: 1rem;
+* {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
 }
-
-a {
-    color: var(--primary);
-    text-decoration: none;
+body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
-
-a:hover {
-    text-decoration: underline;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
-
-.hero {
-    text-align: center;
-    padding: 6rem 1rem;
-    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+header {
     border-bottom: 1px solid var(--border);
-    margin-bottom: 2rem;
+    padding: 1rem 0;
 }
-
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+nav a {
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+nav a:hover {
+    color: var(--primary);
+}
+nav strong a {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.hero {
+    padding: 5rem 0 4rem;
+    text-align: center;
+}
 .hero h1 {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 3.5rem;
     font-weight: 800;
-    letter-spacing: -1.5px;
-    background: linear-gradient(135deg, var(--primary), #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.025em;
+    margin-bottom: 1rem;
+    line-height: 1.1;
 }
-
 .hero p {
     font-size: 1.25rem;
-    color: var(--text-muted);
-    max-width: 600px;
+    color: var(--fg-muted);
+    max-width: 42rem;
     margin: 0 auto 2rem;
-    line-height: 1.6;
 }
-
 .badges {
     display: flex;
     justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 2.5rem;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
 }
-
 .badge {
-    background: var(--bg-surface);
-    color: var(--text-main);
-    padding: 0.35rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    background-color: var(--border);
+    color: var(--fg);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
-
+[role="button"] {
+    display: inline-block;
+    background-color: var(--primary);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: background-color 0.15s;
+    border: 1px solid transparent;
+}
+[role="button"]:hover {
+    background-color: var(--primary-hover);
+    color: #ffffff;
+}
+[role="button"].secondary {
+    background-color: transparent;
+    color: var(--fg);
+    border-color: var(--border);
+}
+[role="button"].secondary:hover {
+    background-color: var(--border);
+    color: var(--fg);
+}
+.hero [role="button"] {
+    margin: 0 0.5rem;
+}
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    padding: 0 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 2rem 0 4rem;
 }
-
 .card {
-    padding: 2.5rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    background: var(--bg-surface);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 2rem;
 }
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
 .card h3 {
-    margin-top: 0;
-    color: var(--text-main);
     font-size: 1.25rem;
     font-weight: 600;
+    margin-bottom: 0.75rem;
 }
-
 .card p {
-    color: var(--text-muted);
-    margin-bottom: 0;
-    line-height: 1.6;
+    color: var(--fg-muted);
 }
-
+.grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
 .docs-sidebar {
     border-right: 1px solid var(--border);
-    padding-right: 1.5rem;
+    padding-right: 1rem;
 }
-
-.docs-content {
-    padding-left: 1.5rem;
+.docs-sidebar h4 {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
 }
-
-nav ul li strong a {
-    font-size: 1.5rem;
-    color: var(--text-main);
-    font-weight: 800;
-    letter-spacing: -0.5px;
+.docs-sidebar ul {
+    list-style: none;
 }
-
+.docs-sidebar li {
+    margin-bottom: 0.5rem;
+}
+.docs-sidebar a {
+    color: var(--fg);
+    text-decoration: none;
+}
+.docs-sidebar a:hover {
+    color: var(--primary);
+}
+.docs-content h2 {
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+}
+.docs-content p {
+    margin-bottom: 1rem;
+    color: var(--fg-muted);
+}
+pre {
+    background-color: var(--border);
+    padding: 1rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.875rem;
+}
 footer {
-    text-align: center;
-    margin-top: 4rem;
-    padding-bottom: 2rem;
-    color: var(--text-muted);
     border-top: 1px solid var(--border);
-    padding-top: 2rem;
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 0.875rem;
 }
-
-[role="button"] {
-    background: var(--primary);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: background 0.2s;
+footer hr {
+    display: none;
 }
-
-[role="button"]:hover {
-    background: var(--primary-hover);
-    text-decoration: none;
-}
-
-[role="button"].secondary {
-    background: var(--bg-surface);
-    color: var(--text-main);
-    border: 1px solid var(--border);
-}
-
-[role="button"].secondary:hover {
-    background: var(--bg-base);
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    .docs-sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding-right: 0;
+        padding-bottom: 1rem;
+    }
 }
