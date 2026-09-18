@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nqphp\Feature\Site\View;
 
+use Nqphp\Core\Tag\AbstractTag;
 use Nqphp\Core\Tag\Tag;
 
 class Layout
