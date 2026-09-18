@@ -18,10 +18,7 @@ namespace Nqphp\Core\Tag;
 final class Option extends AbstractTag
 {
     /** Tag name is hard-coded to "option" — subclass never varies. */
-    public function __construct()
-    {
-        $this->tag = 'option';
-    }
+    protected string $tag = 'option';
 
     /** Convenience: value + content + optional selected flag.
      *

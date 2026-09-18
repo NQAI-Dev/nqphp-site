@@ -13,10 +13,7 @@ namespace Nqphp\Core\Tag;
 final class Textarea extends AbstractTag
 {
     /** Tag name is hard-coded to "textarea" — subclass never varies. */
-    public function __construct()
-    {
-        $this->tag = 'textarea';
-    }
+    protected string $tag = 'textarea';
 
     /** Convenience: name, content, plus any other attrs.
      *

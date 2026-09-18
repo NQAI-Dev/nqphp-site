@@ -14,10 +14,7 @@ namespace Nqphp\Core\Tag;
 final class Label extends AbstractTag
 {
     /** Tag name is hard-coded to "label" — subclass never varies. */
-    public function __construct()
-    {
-        $this->tag = 'label';
-    }
+    protected string $tag = 'label';
 
     /** Convenience: for-id + label text in one call.
      *
