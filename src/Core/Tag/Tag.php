@@ -37,6 +37,21 @@ final class Tag
     }
 
     /** @return Span a fresh, empty <span> builder. */
+    public static function h1(array $attributes = [], string|AbstractTag|array $children = []): H1
+    {
+        return new H1($attributes, $children);
+    }
+
+    public static function h3(array $attributes = [], string|AbstractTag|array $children = []): H3
+    {
+        return new H3($attributes, $children);
+    }
+
+    public static function p(array $attributes = [], string|AbstractTag|array $children = []): P
+    {
+        return new P($attributes, $children);
+    }
+
     public static function span(): Span
     {
         return new Span();
