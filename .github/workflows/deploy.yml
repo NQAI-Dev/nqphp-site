@@ -24,10 +24,10 @@ jobs:
       - name: Deploy via rsync
         uses: easingthemes/ssh-deploy@main
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: *** secrets.VPS_SSH_KEY }}
           ARGS: "-rltgoDzvO --delete"
           SOURCE: "/"
           REMOTE_HOST: ${{ secrets.VPS_HOST }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: ${{ secrets.VPS_TARGET_DIR }}
-          EXCLUDE: "/.git/, /.github/"
+          TARGET: ${{ secrets.VPS_PATH }}
+          EXCLUDE: "/.git/, /.github/, /vendor/, /node_modules/"

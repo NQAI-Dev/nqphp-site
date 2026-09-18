@@ -339,6 +339,21 @@ Open Phase 2 follow-ups (not yet shipped, lower priority):
   persists per request are common (currently each persist() writes
   immediately).
 
+## Deployment
+
+The site is deployed to the VPS (<твоя_впс>) on every push to `main` via GitHub Actions (`.github/workflows/deploy.yml`) using rsync over SSH.
+
+### Required GitHub Secrets
+
+Configure these repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | Description |
+|---|---|
+| `VPS_HOST` | `<твоя_впс>` (the VPS IP) |
+| `VPS_USER` | SSH user on the VPS |
+| `VPS_SSH_KEY` | Private SSH key with access to the target path |
+| `VPS_PATH` | Absolute remote path where the site lives (e.g. `/var/www/nqphp-site`) |
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
