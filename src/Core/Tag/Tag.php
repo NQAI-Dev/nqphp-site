@@ -34,6 +34,11 @@ final class Tag
         return new H2($attributes, $children);
     }
 
+    public static function h4(array $attributes = [], string|AbstractTag|array $children = []): H4
+    {
+        return new H4($attributes, $children);
+    }
+
     public static function h3(array $attributes = [], string|AbstractTag|array $children = []): H3
     {
         return new H3($attributes, $children);
@@ -45,6 +50,16 @@ final class Tag
     }
 
     public static function span(array $attributes = [], string|AbstractTag|array $children = []): Span
+    public static function pre(array $attributes = [], string|AbstractTag|array $children = []): Pre
+    {
+        return new Pre($attributes, $children);
+    }
+
+    public static function code(array $attributes = [], string|AbstractTag|array $children = []): Code
+    {
+        return new Code($attributes, $children);
+    }
+
     {
         return new Span($attributes, $children);
     }

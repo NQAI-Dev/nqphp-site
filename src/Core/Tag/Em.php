@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nqphp\Core\Tag;
 
-class P extends AbstractTag
+class Em extends AbstractTag
 {
-    protected string $tag = 'p';
+    protected string $tag = 'em';
 }

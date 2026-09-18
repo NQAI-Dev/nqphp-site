@@ -48,6 +48,26 @@ abstract class AbstractTag
     /** @var string Rendered child HTML (concatenation of appendChild calls). */
     protected string $children = '';
 
+    public function __construct(array $attributes = [], string|self|array $children = [])
+    {
+        $this->setAttributes($attributes);
+        
+        if (is_array($children)) {
+            foreach ($children as $child) {
+                if (is_string($child)) {
+                    $this->children .= self::escape($child);
+                } elseif ($child instanceof self) {
+                    $this->appendChild($child);
+                }
+            }
+        } elseif (is_string($children)) {
+            $this->setContent($children);
+        } elseif ($children instanceof self) {
+            $this->appendChild($children);
+        }
+    }
+
+
     /** Append a child tag. The child's rendered HTML becomes part of
      *  this tag's content. Useful for <select><option>...</option></select>,
      *  <ul><li>...</li></ul>, and similar nested structures.
