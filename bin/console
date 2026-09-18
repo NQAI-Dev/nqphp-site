@@ -1,0 +1,349 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Nqphp\Core\Console\CommandDiscoverer;
+use Nqphp\Core\Kernel\Kernel;
+use Symfony\Component\Console\Application;
+
+/**
+ * nqphp CLI entry point.
+ *
+ * Phase 2: routes the framework to a real Symfony Console Application.
+ * Commands are discovered from `#[AsCommand]` attributes across:
+ *   - src/Feature/<Feature>/Command/<File>.php   (project commands)
+ *   - src/Core/Command/<File>.php        (framework commands, future)
+ *
+ * The legacy hand-rolled `routes:list` is preserved as a built-in
+ * command so CI can still validate the route surface without registering
+ * a feature command for it.
+ */
+final class RoutesListCommand extends \Symfony\Component\Console\Command\Command
+{
+    public function __construct(private readonly Kernel $kernel)
+    {
+        parent::__construct('routes:list', 'List all routes discovered from #[Controller]+#[Route] attributes.');
+    }
+
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
+    {
+        $routes = $this->kernel->getRouteCollection();
+        $rows = [];
+        $maxName = 0;
+        foreach ($routes->all() as $name => $route) {
+            $maxName = max($maxName, \strlen($name));
+            $rows[] = [$name, $route->getPath(), implode('|', $route->getMethods() ?: ['ANY'])];
+        }
+        \usort($rows, fn($a, $b) => $a[0] <=> $b[0]);
+
+        $output->writeln('<info>Discovered routes</info>');
+        if (\count($rows) === 0) {
+            $output->writeln('  <comment>(no routes)</comment>');
+            return self::SUCCESS;
+        }
+        $output->writeln(sprintf('  %-'.(int) $maxName.'s  %-30s  %s', 'NAME', 'PATH', 'METHODS'));
+        foreach ($rows as [$n, $p, $m]) {
+            $output->writeln(sprintf('  %-'.(int) $maxName.'s  %-30s  %s', $n, $p, $m));
+        }
+        return self::SUCCESS;
+    }
+}
+
+final class ScheduleListCommand extends \Symfony\Component\Console\Command\Command
+{
+    public function __construct(private readonly \Nqphp\Core\Scheduler\ScheduleDiscoverer $discoverer)
+    {
+        parent::__construct('schedule:list', 'List all scheduled tasks discovered from #[Schedule] attributes.');
+    }
+
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
+    {
+        $schedules = $this->discoverer->discover()->all();
+        $output->writeln('<info>Discovered schedules</info>');
+        if (\count($schedules) === 0) {
+            $output->writeln('  <comment>(no schedules)</comment>');
+            return self::SUCCESS;
+        }
+        $rows = [];
+        $maxName = 0;
+        foreach ($schedules as $s) {
+            $maxName = max($maxName, \strlen($s['name']));
+            $rows[] = [$s['name'], $s['cron'], $s['description']];
+        }
+        \usort($rows, fn($a, $b) => $a[0] <=> $b[0]);
+        $output->writeln(sprintf('  %-'.(int) $maxName.'s  %-25s  %s', 'NAME', 'CRON', 'DESCRIPTION'));
+        foreach ($rows as [$n, $c, $d]) {
+            $output->writeln(sprintf('  %-'.(int) $maxName.'s  %-25s  %s', $n, $c, $d));
+        }
+        return self::SUCCESS;
+    }
+}
+
+final class ScheduleRunCommand extends \Symfony\Component\Console\Command\Command
+{
+    public function __construct(private readonly \Nqphp\Core\Scheduler\ScheduleDiscoverer $discoverer)
+    {
+        parent::__construct('schedule:run', 'Run scheduled tasks whose cron is due right now.');
+    }
+
+    protected function configure(): void
+    {
+        $this->addArgument('name', \Symfony\Component\Console\Input\InputArgument::OPTIONAL, 'Run only this schedule by name.');
+        $this->addOption('force', 'f', \Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Run all schedules regardless of cron (dry-run alternative).');
+    }
+
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
+    {
+        $schedules = $this->discoverer->discover()->all();
+        if (\count($schedules) === 0) {
+            $output->writeln('<comment>(no schedules configured)</comment>');
+            return self::SUCCESS;
+        }
+
+        $targetName = $input->getArgument('name');
+        $force = (bool) $input->getOption('force');
+        $ran = 0;
+        $errors = 0;
+
+        // Real cron parser via Symfony Scheduler's RecurringMessage.
+        // Replaces the hand-rolled isDue() / fieldMatches() pair from
+        // 04d0799, which only supported "*", "*/N", single integers,
+        // and comma-lists. Symfony Scheduler handles every expression
+        // Symfony accepts (ranges like "1-5", weekday abbreviations
+        // like "MON-FRI", L/W modifiers).
+        $scheduler = new \Symfony\Component\Scheduler\Scheduler();
+        $nowMs = (int) (microtime(true) * 1000);
+
+        foreach ($schedules as $s) {
+            if ($targetName !== null && $s['name'] !== $targetName) {
+                continue;
+            }
+            if (!$force) {
+                try {
+                    $msg = \Symfony\Component\Scheduler\RecurringMessage::cron($s['cron']);
+                } catch (\Throwable $e) {
+                    $output->writeln(sprintf('    <error>parse FAIL</error> for %s: %s', $s['cron'], $e->getMessage()));
+                    $errors++;
+                    continue;
+                }
+                if (!$scheduler->isDue($msg, $nowMs)) {
+                    continue;
+                }
+            }
+            $output->writeln(sprintf('  <info>running</info> %s — %s', $s['name'], $s['cron']));
+            try {
+                [$_cls, $method] = $s['callable'];
+                $_cls::$method();
+                $ran++;
+            } catch (\Throwable $e) {
+                $output->writeln(sprintf('    <error>FAIL</error>: %s', $e->getMessage()));
+                $errors++;
+            }
+        }
+
+        if ($ran === 0) {
+            $output->writeln('<comment>(no schedules due — pass --force to run all)</comment>');
+        } else {
+            $output->writeln(sprintf('<info>ran %d schedule(s), %d error(s)</info>', $ran, $errors));
+        }
+        return $errors === 0 ? self::SUCCESS : self::FAILURE;
+    }
+}
+
+$projectDir = dirname(__DIR__);
+$kernel = new Kernel($projectDir);
+
+$cmdDiscoverer = new CommandDiscoverer([
+    $projectDir . '/src/Feature',
+    $projectDir . '/src/Core',
+]);
+$schedDiscoverer = new \Nqphp\Core\Scheduler\ScheduleDiscoverer([
+    $projectDir . '/src/Feature',
+    $projectDir . '/src/Core',
+]);
+
+final class ServiceListCommand extends \Symfony\Component\Console\Command\Command
+{
+    public function __construct(private readonly Kernel $kernel)
+    {
+        parent::__construct('service:list', 'List all #[Service]-discovered service classes.');
+    }
+
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
+    {
+        $services = $this->kernel->serviceDiscoverer()->discover()->all();
+        $output->writeln('<info>Discovered services</info>');
+        if (\count($services) === 0) {
+            $output->writeln('  <comment>(no services — define one with #[Service] under src/Feature/*/Service/)</comment>');
+            return self::SUCCESS;
+        }
+        $maxName = 0;
+        foreach ($services as $name => $desc) {
+            $maxName = max($maxName, \strlen($name));
+        }
+        $output->writeln(sprintf('  %-'.(int) $maxName.'s  %-12s  %s', 'NAME', 'SCOPE', 'CLASS'));
+        foreach ($services as $name => $desc) {
+            $output->writeln(sprintf('  %-'.(int) $maxName.'s  %-12s  %s', $name, $desc['scope'], $desc['class']));
+        }
+        return self::SUCCESS;
+    }
+}
+
+final class FeatureShowCommand extends \Symfony\Component\Console\Command\Command
+{
+    public function __construct(private readonly Kernel $kernel)
+    {
+        parent::__construct('feature:show', 'Show detailed info (config + routes + middlewares + commands) for one feature.');
+    }
+
+    protected function configure(): void
+    {
+        $this->addArgument('name', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'The feature name (e.g. "Hello").');
+    }
+
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
+    {
+        $name = $input->getArgument('name');
+        $features = $this->kernel->featureConfig()->load()->features();
+        if (!\in_array($name, $features, true)) {
+            $output->writeln(sprintf('<error>Feature "%s" not discovered.</error>', $name));
+            $output->writeln('<comment>Known features:</comment>');
+            foreach ($features as $known) {
+                $output->writeln('  ' . $known);
+            }
+            return self::FAILURE;
+        }
+
+        $output->writeln(sprintf('<info>Feature: %s</info>', $name));
+
+        // Config
+        $output->writeln('  config:');
+        $config = $this->kernel->featureConfig()->all($name);
+        if (\count($config) === 0) {
+            $output->writeln('    <comment>(no config.php)</comment>');
+        } else {
+            foreach ($config as $key => $value) {
+                $output->writeln(sprintf('    %s = %s', $key, \is_scalar($value) ? \var_export($value, true) : \json_encode($value)));
+            }
+        }
+
+        // Routes (filter by feature-name prefix)
+        $output->writeln('  routes:');
+        $routes = $this->kernel->getRouteCollection();
+        $matched = [];
+        foreach ($routes->all() as $rname => $route) {
+            if (str_starts_with($rname, $name . ':')) {
+                $matched[$rname] = $route;
+            }
+        }
+        if (\count($matched) === 0) {
+            $output->writeln('    <comment>(none)</comment>');
+        } else {
+            foreach ($matched as $rname => $route) {
+                $output->writeln(sprintf('    %s → %s %s', $rname, $route->getPath(), implode('|', $route->getMethods() ?: ['ANY'])));
+            }
+        }
+
+        // Middlewares (filter by feature-name prefix)
+        $output->writeln('  middlewares:');
+        $matched = [];
+        foreach ($this->kernel->middlewareDiscoverer()->discover()->all() as $mw) {
+            if (str_starts_with($mw['name'], $name . ':')) {
+                $matched[] = $mw;
+            }
+        }
+        if (\count($matched) === 0) {
+            $output->writeln('    <comment>(none)</comment>');
+        } else {
+            foreach ($matched as $mw) {
+                $output->writeln(sprintf('    %s (order=%d)', $mw['name'], $mw['order']));
+            }
+        }
+
+        return self::SUCCESS;
+    }
+}
+
+final class FeatureListCommand extends \Symfony\Component\Console\Command\Command
+{
+    public function __construct(private readonly Kernel $kernel)
+    {
+        parent::__construct('feature:list', 'Show every discovered feature with its config, routes, middlewares, commands.');
+    }
+
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
+    {
+        $features = $this->kernel->featureConfig()->load()->features();
+        $output->writeln('<info>Discovered features</info>');
+        if (\count($features) === 0) {
+            $output->writeln('  <comment>(no features — run from inside src/Feature)</comment>');
+            return self::SUCCESS;
+        }
+        foreach ($features as $name) {
+            $output->writeln('');
+            $output->writeln(sprintf('  <comment>%s</comment>', $name));
+
+            // Config
+            $config = $this->kernel->featureConfig()->all($name);
+            $output->writeln('    config:');
+            if (\count($config) === 0) {
+                $output->writeln('      <comment>(no config.php)</comment>');
+            } else {
+                foreach ($config as $key => $value) {
+                    $output->writeln(sprintf('      %s = %s', $key, \is_scalar($value) ? \var_export($value, true) : \json_encode($value)));
+                }
+            }
+
+            // Routes (only those under this feature's prefix)
+            $routes = $this->kernel->getRouteCollection();
+            $matched = [];
+            foreach ($routes->all() as $rname => $route) {
+                if (str_starts_with($rname, $name . ':')) {
+                    $matched[$rname] = $route;
+                }
+            }
+            $output->writeln('    routes:');
+            if (\count($matched) === 0) {
+                $output->writeln('      <comment>(no routes)</comment>');
+            } else {
+                foreach ($matched as $rname => $route) {
+                    $output->writeln(sprintf('      %s → %s %s', $rname, $route->getPath(), implode('|', $route->getMethods() ?: ['ANY'])));
+                }
+            }
+
+            // Middlewares — show ones whose name starts with "<feature>:"
+            $middlewares = $this->kernel->middlewareDiscoverer()->discover()->all();
+            $matched = [];
+            foreach ($middlewares as $mw) {
+                if (str_starts_with($mw['name'], $name . ':')) {
+                    $matched[] = $mw;
+                }
+            }
+            $output->writeln('    middlewares:');
+            if (\count($matched) === 0) {
+                $output->writeln('      <comment>(none)</comment>');
+            } else {
+                foreach ($matched as $mw) {
+                    $output->writeln(sprintf('      %s (order=%d)', $mw['name'], $mw['order']));
+                }
+            }
+        }
+        return self::SUCCESS;
+    }
+}
+
+$app = new Application('nqphp', '0.2.0-dev');
+$app->add(new RoutesListCommand($kernel));
+$app->add(new ScheduleListCommand($schedDiscoverer));
+$app->add(new ScheduleRunCommand($schedDiscoverer));
+$app->add(new FeatureListCommand($kernel));
+$app->add(new FeatureShowCommand($kernel));
+$app->add(new ServiceListCommand($kernel));
+foreach ($cmdDiscoverer->discover() as $command) {
+    $app->add($command);
+}
+$app->setDefaultCommand('list', false);
+$app->run();

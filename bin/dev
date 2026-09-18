@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# bin/dev — orchestrate the nqphp local dev environment.
+#
+# What it does:
+#   - Runs `composer install` if vendor/ is missing
+#   - Starts PHP's built-in web server with public/ as docroot
+#   - Honors $NQPHP_PORT and $NQPHP_HOST env vars (defaults: 8000 / 0.0.0.0)
+#   - Clean Ctrl-C: forwards SIGINT/SIGTERM and prints a shutdown line
+#
+# Usage:
+#   bin/dev                   # default 0.0.0.0:8000
+#   bin/dev --port 9000        # custom port
+#   NQPHP_PORT=9000 bin/dev    # same, via env
+#   bin/dev --no-server        # just verify env, exit 0
+#   bin/dev --check            # alias for --no-server
+#
+# Non-goals (Phase 2+ when needed):
+#   - DB seeding / migration runs
+#   - Background worker boot
+#   - Frontend dev-server proxy
+#
+# Kept intentionally minimal in Phase 1 so the pattern is clear;
+# Phase 2 will add Symfony Runtime for env-aware bootstrapping.
+
+set -euo pipefail
+
+PORT="${NQPHP_PORT:-8000}"
+HOST="${NQPHP_HOST:-0.0.0.0}"
+RUN_SERVER=1
+
+# Parse args (no getopts needed; only two flags matter for Phase 1)
+for arg in "$@"; do
+    case "$arg" in
+        --port=*) PORT="${arg#--port=}" ;;
+        --port)   shift; PORT="${1:-8000}" ;;
+        --host=*) HOST="${arg#--host=}" ;;
+        --host)   shift; HOST="${1:-0.0.0.0}" ;;
+        --no-server|--check) RUN_SERVER=0 ;;
+        --help|-h)
+            sed -n '2,17p' "$0"
+            exit 0 ;;
+        *) echo "unknown arg: $arg" >&2; exit 2 ;;
+    esac
+done
+
+# project root = parent of bin/
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$PROJECT_DIR"
+
+# 1) composer install if vendor/ missing
+if [ ! -d "vendor" ]; then
+    echo "vendor/ missing — running composer install..."
+    if ! command -v composer >/dev/null 2>&1; then
+        echo "ERR: composer not in PATH" >&2
+        exit 1
+    fi
+    composer install --prefer-dist --no-progress
+fi
+
+if [ "$RUN_SERVER" -eq 0 ]; then
+    echo "env OK — vendor/ present, host=$HOST port=$PORT"
+    exit 0
+fi
+
+# 2) Start the built-in PHP server
+echo "starting nqphp dev server at http://${HOST}:${PORT}/"
+echo "(Ctrl-C to stop)"
+
+cleanup() {
+    echo ""
+    echo "shutting down nqphp dev server"
+}
+trap cleanup INT TERM
+
+# php's -S blocks until killed; no need to background. Vendor bin/console
+# runs are out of scope here (use `bin/console <cmd>` directly).
+exec php -S "$HOST:$PORT" -t public
