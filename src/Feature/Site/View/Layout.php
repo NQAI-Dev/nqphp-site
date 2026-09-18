@@ -9,7 +9,7 @@ use Nqphp\Core\Tag\Tag;
 
 class Layout
 {
-    public static function render(string $title, \\Nqphp\Core\Tag\AbstractTag|string|\Nqphp\Core\Tag\Tag $content): string
+    public static function render(string $title, \Nqphp\Core\Tag\AbstractTag|\Nqphp\Core\Tag\Tag|string $content): string
     {
         return '<!DOCTYPE html>
 <html lang="en" data-theme="light">
