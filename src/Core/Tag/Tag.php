@@ -64,10 +64,6 @@ final class Tag
         return new Code($attributes, $children);
     }
 
-    {
-        return new Span($attributes, $children);
-    }
-
     public static function ul(array $attributes = [], string|AbstractTag|array $children = []): Ul
     {
         return new Ul($attributes, $children);
