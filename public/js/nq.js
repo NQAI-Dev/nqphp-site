@@ -179,6 +179,16 @@
 
       applySwap(target, responseText, swapStrategy);
 
+      const titleHeader = response.headers.get('X-NQPHP-Title');
+      if (titleHeader) {
+        document.title = titleHeader;
+      } else {
+        const titleMatch = responseText.match(/<title[^>]*>([^<]+)<\/title>/i);
+        if (titleMatch && titleMatch[1]) {
+          document.title = titleMatch[1].trim();
+        }
+      }
+
       if (element.getAttribute('data-nq-push-url') === 'true') {
         window.history.pushState({}, '', requestUrl);
       }

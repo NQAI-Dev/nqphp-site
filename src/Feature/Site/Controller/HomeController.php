@@ -46,7 +46,7 @@ class HomeController
         $content = Tag::div([], [$hero, $features]);
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
-            return new Response($content->toHtml());
+            return new Response($content->toHtml(), 200, ['X-NQPHP-Title' => 'Fast, Modern PHP Framework - nqphp']);
         }
 
         return new Response(Layout::render('Fast, Modern PHP Framework', $content));

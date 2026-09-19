@@ -119,10 +119,11 @@ class DocsController
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
             $target = $_SERVER['HTTP_X_NQPHP_TARGET'] ?? '';
+            $headers = ['X-NQPHP-Title' => 'Overview - Documentation - nqphp'];
             if ($target === '.docs-content') {
-                return new Response($main->toHtml());
+                return new Response($main->toHtml(), 200, $headers);
             }
-            return new Response($layout->toHtml());
+            return new Response($layout->toHtml(), 200, $headers);
         }
 
         return new Response(Layout::render('Overview - Documentation', $layout));
@@ -150,13 +151,15 @@ class DocsController
         ]);
 
         $title = ucwords(str_replace(['-', '_'], ' ', $slug));
+        $fullTitle = $title . ' - Documentation - nqphp';
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
             $target = $_SERVER['HTTP_X_NQPHP_TARGET'] ?? '';
+            $headers = ['X-NQPHP-Title' => $fullTitle];
             if ($target === '.docs-content') {
-                return new Response($main->toHtml());
+                return new Response($main->toHtml(), 200, $headers);
             }
-            return new Response($layout->toHtml());
+            return new Response($layout->toHtml(), 200, $headers);
         }
 
         return new Response(Layout::render($title . ' - Documentation', $layout));
