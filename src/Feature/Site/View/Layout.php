@@ -57,11 +57,21 @@ class Layout
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script>
-        document.addEventListener('nq:afterRequest', function() {
+        document.addEventListener('nq:afterRequest', function(e) {
             if (window.Prism) {
                 Prism.highlightAll();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Обновить активный класс в сайдбаре по текущему URL
+            var currentPath = window.location.pathname;
+            document.querySelectorAll('.docs-sidebar a').forEach(function(link) {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
         });
     </script>
     <script>

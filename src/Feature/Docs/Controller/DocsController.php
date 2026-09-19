@@ -52,7 +52,7 @@ class DocsController
                     'href' => '/docs/' . $slug,
                     'class' => $classes,
                     'data-nq-get' => '/docs/' . $slug,
-                    'data-nq-target' => '.main-wrapper',
+                    'data-nq-target' => '.docs-content',
                     'data-nq-swap' => 'innerHTML',
                     'data-nq-push-url' => 'true',
                 ], $label));
@@ -118,7 +118,8 @@ class DocsController
         ]);
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
-            return new Response($layout->toHtml());
+            // Если запрос идет в рамках документации, можно возвращать сразу $main с обновленным контентом
+            return new Response($main->toHtml());
         }
 
         return new Response(Layout::render('Overview - Documentation', $layout));
@@ -148,7 +149,8 @@ class DocsController
         $title = ucwords(str_replace(['-', '_'], ' ', $slug));
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
-            return new Response($layout->toHtml());
+            // Если запрос идет в рамках документации, можно возвращать сразу $main с обновленным контентом
+            return new Response($main->toHtml());
         }
 
         return new Response(Layout::render($title . ' - Documentation', $layout));
