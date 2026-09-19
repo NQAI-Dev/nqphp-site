@@ -17,9 +17,13 @@
     padding: 0;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 html, body {
     width: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     overflow-x: hidden;
     background-color: var(--bg);
     color: var(--fg);
@@ -27,6 +31,11 @@ html, body {
     font-size: 16px;
     line-height: 1.6;
     -webkit-text-size-adjust: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
 }
 
 body.menu-open {
@@ -137,6 +146,7 @@ a:hover {
 
 /* Layout */
 .main-wrapper {
+    flex: 1 0 auto;
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
@@ -148,22 +158,27 @@ a:hover {
     display: grid;
     grid-template-columns: 250px 1fr;
     gap: 2.5rem;
-    padding: 2rem 0 4rem;
-    align-items: stretch;
-    min-height: calc(100vh - var(--header-height) - 100px);
+    padding: 0 0 4rem;
+    align-items: start;
 }
 
 /* Desktop Sidebar */
 .docs-sidebar {
     position: sticky;
-    top: calc(var(--header-height) + 2rem);
+    top: var(--header-height);
     align-self: start;
-    height: calc(100vh - var(--header-height) - 3rem);
-    max-height: calc(100vh - var(--header-height) - 3rem);
+    height: calc(100vh - var(--header-height));
+    max-height: calc(100vh - var(--header-height));
     overflow-y: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
     padding-right: 1rem;
     border-right: 1px solid var(--border);
     box-sizing: border-box;
+}
+
+.docs-content {
+    padding-top: 2rem;
 }
 
 .docs-sidebar h4 {
