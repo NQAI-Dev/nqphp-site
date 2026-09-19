@@ -31,6 +31,7 @@ class DocsController
                 'session' => 'Session Management',
             ],
             'Core Components' => [
+                'nq-js' => 'Declarative UI & nq.js',
                 'html-tags' => 'Typed HTML Tags & UI',
                 'cache' => 'Cache & State Stores',
                 'events' => 'Event Dispatcher',
@@ -65,42 +66,43 @@ class DocsController
         $intro = '
 # nqphp Documentation
 
-**nqphp** — современный микрофреймворк на PHP 8.4+, спроектированный для построения производительных, предсказуемых и строго типизированных сервисов без магии, тяжелых абстракций и громоздких зависимостей.
+**nqphp** is a modern, lightweight PHP 8.4+ micro-framework designed for building fast, predictable, and strictly typed services without magic, bulky abstractions, or heavy dependencies.
 
 ---
 
-## Архитектурные принципы
+## Architectural Principles
 
-- **Explicit over Implicit**: Никаких скрытых контейнерных трансформаций или автогенерации неявных связей.
-- **Feature-Sliced Design**: Код организован по независимым доменным слайсам (`src/Feature/*`), а не по типам файлов.
-- **Native Attributes**: Полное использование PHP 8.4 attributes (`#[Route]`, `#[Controller]`, `#[Service]`, `#[EventListener]`, `#[Entity]`, `#[AsCommand]`).
-- **Строгая типизация**: `declare(strict_types=1)` по умолчанию во всех компонентах.
-- **Zero Config Bloat**: Без YAML, XML или многоуровневых конфигураций — только строгие типизированные классы настроек.
+- **Explicit over Implicit**: No hidden container transformations or unmapped magic wiring.
+- **Vertical Slice Architecture**: Code is organized into independent domain slices (`src/Feature/*`) rather than horizontal file layers.
+- **Native Attributes**: First-class support for PHP 8 attributes (`#[Route]`, `#[Controller]`, `#[Service]`, `#[EventListener]`, `#[Entity]`, `#[AsCommand]`).
+- **Strict Typing**: `declare(strict_types=1)` enforced across all framework components.
+- **Zero Config Bloat**: No complex XML or nested YAML configurations — lightweight, typed configuration classes.
 
 ---
 
-## Разделы документации
+## Documentation Sections
 
 ### 🚀 Getting Started
-- [Installation & Setup](/docs/installation) — системные требования, развертывание проекта, структура каталогов.
-- [Routing & Attributes](/docs/routing) — декларативный роутинг, параметры маршрутов, HTTP-методы и хуки `#[BeforeRoute]`.
-- [Controllers & Actions](/docs/controllers) — создание контроллеров, инъекция зависимостей, методы `AbstractController`.
+- [Installation & Setup](/docs/installation) — System requirements, project setup, and directory structure.
+- [Routing & Attributes](/docs/routing) — Declarative routing, route parameters, HTTP methods, and `#[BeforeRoute]` hooks.
+- [Controllers & Actions](/docs/controllers) — Controller classes, dependency injection, and `AbstractController` helpers.
 
 ### 🏛 Architecture
-- [DI Container & Services](/docs/container) — автовайринг, регистрация сервисов через `#[Service]`.
-- [Middleware Pipeline](/docs/middleware) — onion-пайплайн, изоляция ошибок через error boundary.
-- [Validation & DTOs](/docs/validation) — типизированная валидация входных данных, 422 Problem Details.
-- [Session Management](/docs/session) — работа с изолированными сессиями через `SessionInterface`.
+- [DI Container & Services](/docs/container) — Autowiring and service registration via `#[Service]`.
+- [Middleware Pipeline](/docs/middleware) — Onion pipeline architecture and error boundary handling.
+- [Validation & DTOs](/docs/validation) — Strongly typed input validation and RFC 7807 problem details.
+- [Session Management](/docs/session) — Isolated, secure sessions via `SessionInterface`.
 
 ### 🧱 Core Components
-- [Typed HTML Tags & UI](/docs/html-tags) — типобезопасный HTML DSL без шаблонизаторов и защита от XSS.
-- [Cache & State Stores](/docs/cache) — встроенное in-process и PSR кеширование с TTL и namespace.
-- [Event Dispatcher](/docs/events) — подписка и диспетчеризация событий через `#[EventListener]`.
-- [Entity & SQLite ORM](/docs/entity) — работа с базой данных, схемы сущностей, `EntityManager`.
+- [Declarative UI & nq.js](/docs/nq-js) — Lightweight HTMX-like client runtime with declarative attributes and automated CSRF.
+- [Typed HTML Tags & UI](/docs/html-tags) — Type-safe HTML DSL without external template engines.
+- [Cache & State Stores](/docs/cache) — In-process and PSR-compatible caching with TTL and key namespaces.
+- [Event Dispatcher](/docs/events) — Event publishing and subscriptions via `#[EventListener]`.
+- [Entity & SQLite ORM](/docs/entity) — Database schemas, typed entities, and `EntityManager`.
 
 ### ⚙️ CLI & Ops
-- [CLI & Console Commands](/docs/console) — создание терминальных команд через `#[AsCommand]`.
-- [Feature Configuration](/docs/config) — типизированные конфигурации через `FeatureConfig`.
+- [CLI & Console Commands](/docs/console) — Building terminal commands using `#[AsCommand]`.
+- [Feature Configuration](/docs/config) — Typed per-feature configurations via `FeatureConfig`.
 ';
         $parsedown = new Parsedown();
         $html = $parsedown->text($intro);
