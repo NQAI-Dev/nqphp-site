@@ -8,7 +8,7 @@
  *   data-nq-post="<url>"       : Perform POST request
  *   data-nq-put="<url>"        : Perform PUT request
  *   data-nq-delete="<url>"     : Perform DELETE request
- *   data-nq-trigger="<event>"  : Trigger event: click, submit, change, input, or load
+ *   data-nq-trigger="<event>"  : Trigger event: click, submit, change, input, or load (default: click for buttons/links, submit for forms, change for select/inputs)
  *   data-nq-target="<css>"     : Target CSS selector to swap content into (default: this element)
  *   data-nq-swap="<strategy>"  : innerHTML (default), outerHTML, beforebegin, afterbegin, beforeend, afterend, none
  *   data-nq-push-url="true"    : Push request URL to browser History (optional)
@@ -53,32 +53,45 @@
   function applySwap(target, html, strategy) {
     if (!target) return;
     const s = (strategy || 'innerHTML').toLowerCase();
+    const parent = target.parentElement || document.body;
 
     switch (s) {
-      case 'outerhtml':
-        target.outerHTML = html;
-        break;
+      case 'outerhtml': {
+        const temp = document.createElement('template');
+        temp.innerHTML = html.trim();
+        const newNodes = Array.from(temp.content.childNodes);
+        target.replaceWith(...newNodes);
+        newNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            scan(node);
+          }
+        });
+        return;
+      }
       case 'beforebegin':
         target.insertAdjacentHTML('beforebegin', html);
+        scan(parent);
         break;
       case 'afterbegin':
         target.insertAdjacentHTML('afterbegin', html);
+        scan(target);
         break;
       case 'beforeend':
         target.insertAdjacentHTML('beforeend', html);
+        scan(target);
         break;
       case 'afterend':
         target.insertAdjacentHTML('afterend', html);
+        scan(parent);
         break;
       case 'none':
         break;
       case 'innerhtml':
       default:
         target.innerHTML = html;
+        scan(target);
         break;
     }
-
-    scan(document);
   }
 
   async function handleRequest(element, method, url) {
@@ -110,6 +123,7 @@
     let body = null;
     let requestUrl = url;
 
+    // Collect payload if form or inputs
     if (element.tagName === 'FORM') {
       const formData = new FormData(element);
       if (method === 'GET') {
@@ -163,7 +177,7 @@
       applySwap(target, responseText, swapStrategy);
 
       if (element.getAttribute('data-nq-push-url') === 'true') {
-        window.history.pushState({ nqUrl: requestUrl, targetSelector, swapStrategy }, '', requestUrl);
+        window.history.pushState({}, '', requestUrl);
       }
 
       document.dispatchEvent(new CustomEvent('nq:afterRequest', {
@@ -235,32 +249,6 @@
     }
     const elements = root.querySelectorAll(selector);
     elements.forEach(bindElement);
-  }
-
-  // History navigation handling (Back/Forward)
-  if (typeof window !== 'undefined') {
-    window.addEventListener('popstate', (e) => {
-      const url = window.location.pathname + window.location.search;
-      fetch(url, {
-        headers: {
-          'Accept': 'text/html, application/xhtml+xml',
-          'X-NQPHP-Request': 'true'
-        }
-      })
-      .then(res => res.text())
-      .then(html => {
-        const target = document.querySelector('.main-wrapper');
-        if (target) {
-          applySwap(target, html, 'innerHTML');
-          document.dispatchEvent(new CustomEvent('nq:afterRequest', {
-            detail: { url, target }
-          }));
-        }
-      })
-      .catch(() => {
-        window.location.reload();
-      });
-    });
   }
 
   // Auto-init on DOM ready
