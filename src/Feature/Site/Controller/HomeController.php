@@ -25,7 +25,7 @@ class HomeController
                 Tag::span(['class' => 'badge'], 'Fast Router')
             ]),
             Tag::a(['href' => '/docs', 'role' => 'button', 'data-nq-get' => '/docs', 'data-nq-target' => '.main-wrapper', 'data-nq-swap' => 'innerHTML', 'data-nq-push-url' => 'true'], 'Get Started'),
-            Tag::a(['href' => 'https://github.com/nqai/nqphp', 'role' => 'button', 'class' => 'secondary'], 'View on GitHub'),
+            Tag::a(['href' => 'https://github.com/NQAI-Dev/nqphp', 'target' => '_blank', 'rel' => 'noopener', 'role' => 'button', 'class' => 'secondary'], 'View on GitHub'),
         ]);
 
         $features = Tag::div(['class' => 'feature-grid'], [
