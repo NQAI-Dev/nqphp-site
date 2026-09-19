@@ -61,7 +61,7 @@ class DocsController
         $html = $parsedown->text($markdown);
 
         // We wrap raw HTML in a div
-        $main = Tag::div(['class' => 'docs-content markdown-body'], $html);
+        $main = Tag::div(['class' => 'docs-content markdown-body'], Tag::raw($html));
 
         $layout = Tag::div(['class' => 'grid'], [
             $this->getSidebar(),
