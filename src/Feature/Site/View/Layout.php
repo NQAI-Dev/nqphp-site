@@ -9,13 +9,18 @@ class Layout
     public static function render(string $title, \Nqphp\Core\Tag\AbstractTag|string $content): string
     {
         $v = time();
-        return '<!DOCTYPE html>
+        $renderedContent = is_string($content) ? $content : (method_exists($content, 'toHtml') ? $content->toHtml() : (string)$content);
+        $escapedTitle = htmlspecialchars($title);
+        $year = date('Y');
+
+        return <<<HTML
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>' . htmlspecialchars($title) . ' - nqphp</title>
-    <link rel="stylesheet" href="/css/style.css?v=' . $v . '">
+    <title>{$escapedTitle} - nqphp</title>
+    <link rel="stylesheet" href="/css/style.css?v={$v}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <script src="/js/nq.js" defer></script>
 </head>
@@ -42,11 +47,11 @@ class Layout
     </header>
 
     <div class="main-wrapper">
-        ' . (is_string($content) ? $content : (method_exists($content, "toHtml") ? $content->toHtml() : (string)$content)) . '
+        {$renderedContent}
     </div>
 
     <footer class="site-footer">
-        <p>&copy; ' . date('Y') . ' nqphp. Micro-framework with zero magic.</p>
+        <p>&copy; {$year} nqphp. Micro-framework with zero magic.</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
@@ -87,6 +92,7 @@ class Layout
         }
     </script>
 </body>
-</html>';
+</html>
+HTML;
     }
 }
