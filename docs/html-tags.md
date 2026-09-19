@@ -1,40 +1,41 @@
 # Typed HTML Tags & UI
 
-В `nqphp` встроен объектно-ориентированный DSL для генерации безопасного HTML без тяжелых шаблонизаторов (Twig, Blade).
+`nqphp` provides a built-in, object-oriented DSL for generating safe, valid HTML without external template engines such as Twig or Blade.
 
-## Зачем Typed Tags?
-1. **Безопасность**: Все текстовые значения автоматически экранируются через `htmlspecialchars(..., ENT_QUOTES | ENT_HTML5)`. XSS исключен на уровне архитектуры.
-2. **Типизация и автодополнение**: IDE подсказывает методы и сигнатуры классов (`Tag::div()`, `Tag::h1()`, `Tag::a()`).
-3. **Производительность**: Нет шага компиляции, парсинга синтаксического дерева и кеширования сгенерированных PHP-шаблонов.
+## Why Typed Tags?
 
-## Базовый синтаксис
+1. **Security**: All text node values are automatically escaped via `htmlspecialchars(..., ENT_QUOTES | ENT_HTML5)`. XSS vulnerabilities are mitigated at the architecture level.
+2. **Type Safety & Autocompletion**: Modern IDEs offer full code completion and signature validation for standard element methods (`Tag::div()`, `Tag::h1()`, `Tag::a()`).
+3. **Zero Overhead**: No template compilation step, no AST parsing, and no disk caching for generated PHP templates.
 
-Создание элементов через статический фасад `Tag`:
+## Basic Usage
+
+Create HTML elements through the static `Tag` builder:
 
 ```php
 use Nqphp\Core\Tag\Tag;
 
-// Простой тег с текстом
-$header = Tag::h1([], 'Заголовок страницы');
+// Basic tag with string contents
+$header = Tag::h1([], 'Page Title');
 
-// Тег с атрибутами и вложенными потомками
+// Tag with HTML attributes and nested child elements
 $card = Tag::div(['class' => 'card shadow-sm'], [
-    Tag::h2(['class' => 'card-title'], 'Товар #1'),
-    Tag::p(['class' => 'card-text'], 'Описание товара.'),
-    Tag::a(['href' => '/buy/1', 'class' => 'btn btn-primary'], 'Купить')
+    Tag::h2(['class' => 'card-title'], 'Product #1'),
+    Tag::p(['class' => 'card-text'], 'Product description text.'),
+    Tag::a(['href' => '/buy/1', 'class' => 'btn btn-primary'], 'Purchase')
 ]);
 
 echo $card->toHtml();
 ```
 
-## Работа с сырым HTML (`Tag::raw`)
+## Rendering Raw HTML (`Tag::raw`)
 
-Если требуется вывести доверенный HTML (например, после парсера Markdown):
+When outputting trusted markup (for example, output from a parsed Markdown document):
 
 ```php
 $parsedHtml = $parsedown->text($markdownContent);
 
-// Tag::raw оборачивает разметку без повторного экранирования
+// Tag::raw wraps HTML markup without double-escaping
 $content = Tag::div(['class' => 'prose'], [
     Tag::raw($parsedHtml)
 ]);

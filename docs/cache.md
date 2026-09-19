@@ -1,10 +1,10 @@
 # Cache & State Stores
 
-Фреймворк предоставляет встроенное in-process и PSR-совместимое кеширование с поддержкой TTL и пространств имен.
+`nqphp` provides built-in in-process and PSR-compatible caching with TTL expiration support and key namespaces.
 
-## Использование через Kernel
+## Usage via Kernel
 
-Компонент `Cache` доступен напрямую из контроллеров или через контейнер:
+The `Cache` component is accessible directly from controllers or through the service container:
 
 ```php
 namespace App\Feature\Catalog\Controller;
@@ -25,7 +25,7 @@ class CatalogController extends AbstractController
         $data = $cache->get('catalog.categories');
         if ($data === null) {
             $data = $this->loadFromDatabase();
-            // Сохраняем в кеш на 3600 секунд (1 час)
+            // Store in cache for 3600 seconds (1 hour)
             $cache->set('catalog.categories', $data, 3600);
         }
 
@@ -34,14 +34,14 @@ class CatalogController extends AbstractController
 }
 ```
 
-## Пространства имен (Namespaces)
+## Cache Namespaces
 
-Для изолированного сброса частей кеша:
+Namespaces isolate distinct cache segments and allow granular invalidation:
 
 ```php
 $userCache = $cache->namespace('users');
 $userCache->set('profile.1', $userData);
 
-// Очистка только пространства users
+// Clear only the 'users' namespace segment
 $userCache->clear();
 ```
