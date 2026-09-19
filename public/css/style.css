@@ -386,3 +386,126 @@ body.menu-open {
         font-size: 0.92rem;
     }
 }
+
+/* ===== Home Page ===== */
+.hero {
+    text-align: center;
+    padding: 5rem 1rem 3.5rem;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: var(--fg-muted);
+    margin-bottom: 2rem;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.badges {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+}
+
+.badge {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.hero a[role="button"] {
+    display: inline-block;
+    background: var(--primary);
+    color: #000;
+    font-weight: 700;
+    padding: 0.7rem 1.6rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin: 0 0.4rem;
+    transition: background 0.15s ease;
+}
+
+.hero a[role="button"]:hover {
+    background: var(--primary-hover);
+}
+
+.hero a.secondary[role="button"] {
+    background: var(--bg-surface);
+    color: var(--fg);
+    border: 1px solid var(--border);
+}
+
+.hero a.secondary[role="button"]:hover {
+    background: #21262d;
+    color: #fff;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 0 4rem;
+}
+
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.6rem;
+}
+
+.card p {
+    color: var(--fg-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 3rem 0 2.5rem;
+    }
+
+    .hero h1 {
+        font-size: 2.4rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .hero a[role="button"] {
+        display: block;
+        margin: 0.4rem 0;
+        text-align: center;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+        padding: 1.5rem 0 3rem;
+    }
+}
