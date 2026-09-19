@@ -25,7 +25,8 @@ final class RoutesListCommand extends \Symfony\Component\Console\Command\Command
 {
     public function __construct(private readonly Kernel $kernel)
     {
-        parent::__construct('routes:list', 'List all routes discovered from #[Controller]+#[Route] attributes.');
+        parent::__construct('routes:list');
+        $this->setDescription('List all routes discovered from #[Controller]+#[Route] attributes.');
     }
 
     protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
@@ -56,7 +57,8 @@ final class ScheduleListCommand extends \Symfony\Component\Console\Command\Comma
 {
     public function __construct(private readonly \Nqphp\Core\Scheduler\ScheduleDiscoverer $discoverer)
     {
-        parent::__construct('schedule:list', 'List all scheduled tasks discovered from #[Schedule] attributes.');
+        parent::__construct('schedule:list');
+        $this->setDescription('List all scheduled tasks discovered from #[Schedule] attributes.');
     }
 
     protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
@@ -86,7 +88,8 @@ final class ScheduleRunCommand extends \Symfony\Component\Console\Command\Comman
 {
     public function __construct(private readonly \Nqphp\Core\Scheduler\ScheduleDiscoverer $discoverer)
     {
-        parent::__construct('schedule:run', 'Run scheduled tasks whose cron is due right now.');
+        parent::__construct('schedule:run');
+        $this->setDescription('Run scheduled tasks whose cron is due right now.');
     }
 
     protected function configure(): void
@@ -169,7 +172,8 @@ final class ServiceListCommand extends \Symfony\Component\Console\Command\Comman
 {
     public function __construct(private readonly Kernel $kernel)
     {
-        parent::__construct('service:list', 'List all #[Service]-discovered service classes.');
+        parent::__construct('service:list');
+        $this->setDescription('List all #[Service]-discovered service classes.');
     }
 
     protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int
@@ -196,7 +200,8 @@ final class FeatureShowCommand extends \Symfony\Component\Console\Command\Comman
 {
     public function __construct(private readonly Kernel $kernel)
     {
-        parent::__construct('feature:show', 'Show detailed info (config + routes + middlewares + commands) for one feature.');
+        parent::__construct('feature:show');
+        $this->setDescription('Show detailed info (config + routes + middlewares + commands) for one feature.');
     }
 
     protected function configure(): void
@@ -271,7 +276,8 @@ final class FeatureListCommand extends \Symfony\Component\Console\Command\Comman
 {
     public function __construct(private readonly Kernel $kernel)
     {
-        parent::__construct('feature:list', 'Show every discovered feature with its config, routes, middlewares, commands.');
+        parent::__construct('feature:list');
+        $this->setDescription('Show every discovered feature with its config, routes, middlewares, commands.');
     }
 
     protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output): int

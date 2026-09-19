@@ -114,7 +114,17 @@ final class CommandDiscoverer
         $meta = $attrs[0]->newInstance();
 
         /** @var Command $instance */
-        $instance = new $fqcn();
+        try {
+            $instance = new $fqcn();
+        } catch (\Throwable $e) {
+            $refClass = new \ReflectionClass($fqcn);
+            $constructor = $refClass->getConstructor();
+            if ($constructor !== null && $constructor->getNumberOfRequiredParameters() > 0) {
+                // Cannot instantiate command without container parameters during discover
+                return;
+            }
+            $instance = $refClass->newInstance();
+        }
         $instance->setName($meta->name);
         if ($meta->description !== '') {
             $instance->setDescription($meta->description);
