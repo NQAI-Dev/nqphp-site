@@ -114,6 +114,9 @@
     const headers = new Headers();
     headers.set('Accept', 'text/html, application/xhtml+xml');
     headers.set('X-NQPHP-Request', 'true');
+    if (targetSelector) {
+      headers.set('X-NQPHP-Target', targetSelector);
+    }
 
     const token = getCsrfToken();
     if (!SAFE_METHODS.has(method) && token) {

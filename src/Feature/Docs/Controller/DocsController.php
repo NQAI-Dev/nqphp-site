@@ -118,8 +118,11 @@ class DocsController
         ]);
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
-            // Если запрос идет в рамках документации, можно возвращать сразу $main с обновленным контентом
-            return new Response($main->toHtml());
+            $target = $_SERVER['HTTP_X_NQPHP_TARGET'] ?? '';
+            if ($target === '.docs-content') {
+                return new Response($main->toHtml());
+            }
+            return new Response($layout->toHtml());
         }
 
         return new Response(Layout::render('Overview - Documentation', $layout));
@@ -149,8 +152,11 @@ class DocsController
         $title = ucwords(str_replace(['-', '_'], ' ', $slug));
 
         if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
-            // Если запрос идет в рамках документации, можно возвращать сразу $main с обновленным контентом
-            return new Response($main->toHtml());
+            $target = $_SERVER['HTTP_X_NQPHP_TARGET'] ?? '';
+            if ($target === '.docs-content') {
+                return new Response($main->toHtml());
+            }
+            return new Response($layout->toHtml());
         }
 
         return new Response(Layout::render($title . ' - Documentation', $layout));
