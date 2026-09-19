@@ -5,6 +5,7 @@
     --fg: #e6edf3;
     --fg-muted: #8b949e;
     --primary: #38bdf8;
+    --primary-hover: #0284c7;
     --border: #30363d;
     --code-bg: #161b22;
     --header-height: 52px;
@@ -31,6 +32,22 @@ html, body {
 body.menu-open {
     overflow: hidden;
 }
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:visited {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
 
 /* Header */
 .site-header {
@@ -84,6 +101,7 @@ body.menu-open {
 
 .nav-link:hover {
     color: var(--primary);
+    text-decoration: none;
 }
 
 .hamburger-btn {
@@ -175,6 +193,7 @@ body.menu-open {
 .docs-sidebar a:hover {
     color: var(--primary);
     background: var(--bg-surface);
+    text-decoration: none;
 }
 
 .docs-sidebar a.active {
@@ -432,29 +451,33 @@ body.menu-open {
 .hero a[role="button"] {
     display: inline-block;
     background: var(--primary);
-    color: #000;
-    font-weight: 700;
+    color: #0b0f19 !important;
+    font-weight: 600;
     padding: 0.7rem 1.6rem;
     border-radius: 8px;
-    text-decoration: none;
+    text-decoration: none !important;
     font-size: 0.95rem;
     margin: 0 0.4rem;
-    transition: background 0.15s ease;
+    transition: all 0.15s ease;
 }
 
 .hero a[role="button"]:hover {
-    background: var(--primary-hover);
+    background: #7dd3fc;
+    color: #0b0f19 !important;
+    text-decoration: none !important;
 }
 
 .hero a.secondary[role="button"] {
     background: var(--bg-surface);
-    color: var(--fg);
+    color: var(--fg) !important;
     border: 1px solid var(--border);
+    text-decoration: none !important;
 }
 
 .hero a.secondary[role="button"]:hover {
     background: #21262d;
-    color: #fff;
+    color: #fff !important;
+    text-decoration: none !important;
 }
 
 .feature-grid {
