@@ -20,15 +20,25 @@ class DocsController
     {
         $links = [
             'Getting Started' => [
-                'installation' => 'Installation',
+                'installation' => 'Installation & Setup',
                 'routing' => 'Routing & Attributes',
                 'controllers' => 'Controllers & Actions',
             ],
             'Architecture' => [
                 'container' => 'DI Container & Services',
-                'middleware' => 'Middleware & Pipeline',
+                'middleware' => 'Middleware Pipeline',
                 'validation' => 'Validation & DTOs',
-                'session' => 'Session & State',
+                'session' => 'Session Management',
+            ],
+            'Core Components' => [
+                'html-tags' => 'Typed HTML Tags & UI',
+                'cache' => 'Cache & State Stores',
+                'events' => 'Event Dispatcher',
+                'entity' => 'Entity & SQLite ORM',
+            ],
+            'CLI & Ops' => [
+                'console' => 'CLI & Console Commands',
+                'config' => 'Feature Configuration',
             ]
         ];
 
@@ -55,17 +65,42 @@ class DocsController
         $intro = '
 # nqphp Documentation
 
-**nqphp** — легковесный, высокопроизводительный PHP-фреймворк без скрытой магии и оверхеда. Построен вокруг современных возможностей PHP 8.4+, явных интерфейсов и компонентной архитектуры.
+**nqphp** — современный микрофреймворк на PHP 8.4+, спроектированный для построения производительных, предсказуемых и строго типизированных сервисов без магии, тяжелых абстракций и громоздких зависимостей.
 
 ---
 
-### Основные концепции
-* **Явный Dependency Injection**: автовайринг через атрибуты и интерфейсы без громоздких XML/YAML-конфигов.
-* **Атрибутная маршрутизация**: контроллеры и роуты декларируются декларативно прямо в коде (`#[Route]`, `#[Controller]`).
-* **Typed HTML Tags**: безопасный рендеринг представлений без компиляции тяжелых шаблонизаторов (`Tag::div`, `Tag::h1`, `Tag::raw`).
-* **Strict PSR / Modern Standards**: строгая типизация `declare(strict_types=1)`, поддержка Middleware-луковицы и типизированных DTO с автоматической валидацией.
+## Архитектурные принципы
 
-Выберите раздел в боковом меню для перехода к деталям реализации.
+- **Explicit over Implicit**: Никаких скрытых контейнерных трансформаций или автогенерации неявных связей.
+- **Feature-Sliced Design**: Код организован по независимым доменным слайсам (`src/Feature/*`), а не по типам файлов.
+- **Native Attributes**: Полное использование PHP 8.4 attributes (`#[Route]`, `#[Controller]`, `#[Service]`, `#[EventListener]`, `#[Entity]`, `#[AsCommand]`).
+- **Строгая типизация**: `declare(strict_types=1)` по умолчанию во всех компонентах.
+- **Zero Config Bloat**: Без YAML, XML или многоуровневых конфигураций — только строгие типизированные классы настроек.
+
+---
+
+## Разделы документации
+
+### 🚀 Getting Started
+- [Installation & Setup](/docs/installation) — системные требования, развертывание проекта, структура каталогов.
+- [Routing & Attributes](/docs/routing) — декларативный роутинг, параметры маршрутов, HTTP-методы и хуки `#[BeforeRoute]`.
+- [Controllers & Actions](/docs/controllers) — создание контроллеров, инъекция зависимостей, методы `AbstractController`.
+
+### 🏛 Architecture
+- [DI Container & Services](/docs/container) — автовайринг, регистрация сервисов через `#[Service]`.
+- [Middleware Pipeline](/docs/middleware) — onion-пайплайн, изоляция ошибок через error boundary.
+- [Validation & DTOs](/docs/validation) — типизированная валидация входных данных, 422 Problem Details.
+- [Session Management](/docs/session) — работа с изолированными сессиями через `SessionInterface`.
+
+### 🧱 Core Components
+- [Typed HTML Tags & UI](/docs/html-tags) — типобезопасный HTML DSL без шаблонизаторов и защита от XSS.
+- [Cache & State Stores](/docs/cache) — встроенное in-process и PSR кеширование с TTL и namespace.
+- [Event Dispatcher](/docs/events) — подписка и диспетчеризация событий через `#[EventListener]`.
+- [Entity & SQLite ORM](/docs/entity) — работа с базой данных, схемы сущностей, `EntityManager`.
+
+### ⚙️ CLI & Ops
+- [CLI & Console Commands](/docs/console) — создание терминальных команд через `#[AsCommand]`.
+- [Feature Configuration](/docs/config) — типизированные конфигурации через `FeatureConfig`.
 ';
         $parsedown = new Parsedown();
         $html = $parsedown->text($intro);
