@@ -8,33 +8,30 @@ class Layout
 {
     public static function render(string $title, \Nqphp\Core\Tag\AbstractTag|string $content): string
     {
+        $v = time();
         return '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>' . htmlspecialchars($title) . ' - nqphp</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=' . $v . '">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
-    <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
+    <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeMenu()"></div>
 
     <header class="site-header">
         <div class="header-inner">
-            <div class="header-left">
-                <button type="button" class="sidebar-toggle-btn" onclick="toggleDrawer()" aria-label="Open documentation menu">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                    <span>Menu</span>
-                </button>
-                <a href="/" class="logo">
-                    <span class="logo-icon">⚡</span> nqphp
-                </a>
-            </div>
+            <button type="button" class="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle Navigation">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+
+            <a href="/" class="logo">
+                <span class="logo-icon">⚡</span> nqphp
+            </a>
 
             <nav class="nav-links">
                 <a href="/docs" class="nav-link">Docs</a>
@@ -54,26 +51,29 @@ class Layout
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script>
-        function toggleDrawer() {
+        function toggleMenu() {
             var sidebar = document.querySelector(".docs-sidebar");
             var backdrop = document.getElementById("drawer-backdrop");
-            if (sidebar && backdrop) {
-                var isOpen = sidebar.classList.contains("open");
-                if (isOpen) {
-                    closeDrawer();
-                } else {
-                    sidebar.classList.add("open");
-                    backdrop.classList.add("open");
-                    document.body.classList.add("menu-open");
-                }
+            var btn = document.querySelector(".hamburger-btn");
+            if (!sidebar || !backdrop) return;
+            var isOpen = sidebar.classList.contains("open");
+            if (isOpen) {
+                closeMenu();
+            } else {
+                sidebar.classList.add("open");
+                backdrop.classList.add("open");
+                if (btn) btn.classList.add("is-active");
+                document.body.classList.add("menu-open");
             }
         }
 
-        function closeDrawer() {
+        function closeMenu() {
             var sidebar = document.querySelector(".docs-sidebar");
             var backdrop = document.getElementById("drawer-backdrop");
+            var btn = document.querySelector(".hamburger-btn");
             if (sidebar) sidebar.classList.remove("open");
             if (backdrop) backdrop.classList.remove("open");
+            if (btn) btn.classList.remove("is-active");
             document.body.classList.remove("menu-open");
         }
     </script>
