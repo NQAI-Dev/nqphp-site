@@ -17,6 +17,7 @@ class Layout
     <title>' . htmlspecialchars($title) . ' - nqphp</title>
     <link rel="stylesheet" href="/css/style.css?v=' . $v . '">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="/js/nq.js" defer></script>
 </head>
 <body>
     <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeMenu()"></div>
@@ -29,12 +30,12 @@ class Layout
                 <span class="bar"></span>
             </button>
 
-            <a href="/" class="logo">
+            <a href="/" class="logo" data-nq-get="/" data-nq-target=".main-wrapper" data-nq-swap="innerHTML" data-nq-push-url="true">
                 <span class="logo-icon">⚡</span> nqphp
             </a>
 
             <nav class="nav-links">
-                <a href="/docs" class="nav-link">Docs</a>
+                <a href="/docs" class="nav-link" data-nq-get="/docs" data-nq-target=".main-wrapper" data-nq-swap="innerHTML" data-nq-push-url="true">Docs</a>
                 <a href="https://github.com/NQAI-Dev/nqphp" target="_blank" rel="noopener" class="nav-link">GitHub</a>
             </nav>
         </div>
@@ -50,6 +51,14 @@ class Layout
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        document.addEventListener('nq:afterRequest', function() {
+            if (window.Prism) {
+                Prism.highlightAll();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
     <script>
         function toggleMenu() {
             var sidebar = document.querySelector(".docs-sidebar");

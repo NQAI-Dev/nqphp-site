@@ -24,7 +24,7 @@ class HomeController
                 Tag::span(['class' => 'badge'], 'Zero Magic'),
                 Tag::span(['class' => 'badge'], 'Fast Router')
             ]),
-            Tag::a(['href' => '/docs', 'role' => 'button'], 'Get Started'),
+            Tag::a(['href' => '/docs', 'role' => 'button', 'data-nq-get' => '/docs', 'data-nq-target' => '.main-wrapper', 'data-nq-swap' => 'innerHTML', 'data-nq-push-url' => 'true'], 'Get Started'),
             Tag::a(['href' => 'https://github.com/nqai/nqphp', 'role' => 'button', 'class' => 'secondary'], 'View on GitHub'),
         ]);
 
@@ -44,6 +44,10 @@ class HomeController
         ]);
 
         $content = Tag::div([], [$hero, $features]);
+
+        if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
+            return new Response($content->toHtml());
+        }
 
         return new Response(Layout::render('Fast, Modern PHP Framework', $content));
     }

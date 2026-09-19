@@ -51,6 +51,10 @@ class DocsController
                 $listItems[] = Tag::li([], Tag::a([
                     'href' => '/docs/' . $slug,
                     'class' => $classes,
+                    'data-nq-get' => '/docs/' . $slug,
+                    'data-nq-target' => '.main-wrapper',
+                    'data-nq-swap' => 'innerHTML',
+                    'data-nq-push-url' => 'true',
                 ], $label));
             }
             $sections[] = Tag::h4([], $heading);
@@ -113,6 +117,10 @@ class DocsController
             $main
         ]);
 
+        if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
+            return new Response($layout->toHtml());
+        }
+
         return new Response(Layout::render('Overview - Documentation', $layout));
     }
 
@@ -138,6 +146,10 @@ class DocsController
         ]);
 
         $title = ucwords(str_replace(['-', '_'], ' ', $slug));
+
+        if (isset($_SERVER['HTTP_X_NQPHP_REQUEST']) && $_SERVER['HTTP_X_NQPHP_REQUEST'] === 'true') {
+            return new Response($layout->toHtml());
+        }
 
         return new Response(Layout::render($title . ' - Documentation', $layout));
     }
