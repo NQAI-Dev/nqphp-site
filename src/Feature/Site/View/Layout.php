@@ -12,50 +12,69 @@ class Layout
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>' . htmlspecialchars($title) . ' - nqphp</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
-    <header>
-        <div class="container header-content">
-            <div class="logo">
-                <a href="/">
-                    <span class="logo-icon">⚡</span> nqphp
-                </a>
-            </div>
-            <div class="header-right">
-                <nav class="nav-links">
-                    <ul>
-                        <li><a href="/docs" class="nav-link-docs">Docs</a></li>
-                        <li><a href="https://github.com/NQAI-Dev/nqphp" target="_blank">GitHub</a></li>
-                    </ul>
-                </nav>
-                <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle navigation">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <button type="button" class="sidebar-toggle-btn" onclick="toggleDrawer()" aria-label="Open documentation menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
+                    <span>Menu</span>
                 </button>
+                <a href="/" class="logo">
+                    <span class="logo-icon">⚡</span> nqphp
+                </a>
             </div>
+
+            <nav class="nav-links">
+                <a href="/docs" class="nav-link">Docs</a>
+                <a href="https://github.com/NQAI-Dev/nqphp" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+            </nav>
         </div>
     </header>
-    <main class="container">
+
+    <div class="main-wrapper">
         ' . (is_string($content) ? $content : (method_exists($content, "toHtml") ? $content->toHtml() : (string)$content)) . '
-    </main>
-    <footer class="container">
+    </div>
+
+    <footer class="site-footer">
         <p>&copy; ' . date('Y') . ' nqphp. Micro-framework with zero magic.</p>
     </footer>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script>
-        function toggleSidebar() {
+        function toggleDrawer() {
             var sidebar = document.querySelector(".docs-sidebar");
-            if (sidebar) {
-                sidebar.classList.toggle("open");
+            var backdrop = document.getElementById("drawer-backdrop");
+            if (sidebar && backdrop) {
+                var isOpen = sidebar.classList.contains("open");
+                if (isOpen) {
+                    closeDrawer();
+                } else {
+                    sidebar.classList.add("open");
+                    backdrop.classList.add("open");
+                    document.body.classList.add("menu-open");
+                }
             }
+        }
+
+        function closeDrawer() {
+            var sidebar = document.querySelector(".docs-sidebar");
+            var backdrop = document.getElementById("drawer-backdrop");
+            if (sidebar) sidebar.classList.remove("open");
+            if (backdrop) backdrop.classList.remove("open");
+            document.body.classList.remove("menu-open");
         }
     </script>
 </body>
